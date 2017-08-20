@@ -1,0 +1,4 @@
+derby.log
+metastore_db/
+target/
+project/target/
