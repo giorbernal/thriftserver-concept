@@ -19,12 +19,12 @@ object ThriftServer extends App {
 
   val sc = ss.sparkContext;
   val sql = ss.sqlContext;
-  sql.setConf("hive.server2.thrift.port", "10002");
+  sql.setConf("hive.server2.thrift.port", Constants.default_port.toString);
 
   val delimiter = ",";
 
   // Load Data
-  val data: RDD[String] = sc.textFile("/Users/bernal/Documents/incubator/Thriftserver-concept/src/main/resources/FL_insurance_sample.csv");
+  val data: RDD[String] = sc.textFile(Constants.work_path + "/" + Constants.csv_file);
 
   val headers = data.first.split(delimiter);
   val schema = StructType(headers.map(h => StructField(h, StringType)))
@@ -34,8 +34,8 @@ object ThriftServer extends App {
   // Spark SQL process
   val df: DataFrame = ss.createDataFrame(rowRDD, schema).cache
 
-  //df.createOrReplaceTempView("insurance");
-  df.write.saveAsTable("insurance");
+  // Instead of df.createOrReplaceTempView(Constants.table_name), we must persist in Hive
+  df.write.saveAsTable(Constants.table_name);
 
   HiveThriftServer2.startWithContext(sql);
 
@@ -44,7 +44,7 @@ object ThriftServer extends App {
   // Monitor system to stop de Job
   var isThereData: Boolean = true;
   while (isThereData) {
-    Thread.sleep(10000);
+    Thread.sleep(Constants.keep_alive);
     try {
       val dfTest = ss.sql("select * from insurance limit 1");
       dfTest.count();
