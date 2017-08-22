@@ -6,9 +6,10 @@ package es.bernal.thriftserver
 object Constants {
 
   def default_port: Int = 10002;
+  def keep_alive:Int = 10000
+
   def work_path: String = "/Users/bernal/Documents/GitRepos/thriftserver-concept/src/main/resources";
   def csv_file: String = "FL_insurance_sample.csv";
   def table_name: String = "insurance";
-  def keep_alive:Int = 10000
 
 }
